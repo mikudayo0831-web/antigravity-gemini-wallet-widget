@@ -1,0 +1,11 @@
+{
+  "name": "gemini-wallet-widget",
+  "displayName": "Gemini 额度猫娘挂件",
+  "description": "反重力版 Gemini 模型剩余额度猫娘挂件：打开 Antigravity 自动唤起 Windows 透明悬浮桌面猫娘，支持侧边栏/全局 MCP App 面板、Antigravity Hooks 对话统计与 agy statusLine 实时额度流",
+  "version": "1.2.1",
+  "logo": "assets/logo.png",
+  "suggestedPrompts": [
+    "打开 Gemini 额度猫娘挂件",
+    "查看当前 Gemini 模型剩余额度和今日反重力调用统计"
+  ]
+}

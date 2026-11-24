@@ -1,0 +1,18 @@
+# Dependencies
+server/node_modules/
+
+# Build outputs
+desktop/bin/
+desktop/obj/
+desktop/dist/
+ui/dist/
+releases/
+
+# IDE & OS temporary files
+.vs/
+*.user
+*.suo
+*.tmp
+*.log
+.DS_Store
+Thumbs.db

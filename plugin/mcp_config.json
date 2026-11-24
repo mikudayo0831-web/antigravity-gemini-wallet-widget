@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "gemini_wallet": {
+      "command": "node",
+      "args": [
+        "${PLUGIN_ROOT}/server/mcp-server.mjs"
+      ]
+    }
+  }
+}

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gemini 额度猫娘挂件</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: var(--color-background-primary, #131222);
+      --surface: var(--color-background-secondary, rgba(31, 29, 54, 0.85));
+      --surface-soft: var(--color-background-tertiary, rgba(255, 255, 255, 0.05));
+      --text: var(--color-text-primary, #f3f1ff);
+      --muted: var(--color-text-secondary, #a8a2c8);
+      --border: var(--color-border-primary, rgba(164, 161, 250, 0.24));
+      --accent-purple: #a4a1fa;
+      --accent-pink: #f68dc7;
+      --accent-gold: #ffd466;
+      --accent-cyan: #72e6ff;
+      --tone-high: #8ef0d0;
+      --tone-mid: #ffd466;
+      --tone-low: #ff7c9d;
+      --radius: 16px;
+    }
+
+    html[data-theme="light"] {
+      --bg: var(--color-background-primary, #f7f6ff);
+      --surface: var(--color-background-secondary, #ffffff);
+      --surface-soft: var(--color-background-tertiary, #f0eeff);
+      --text: var(--color-text-primary, #241d3a);
+      --muted: var(--color-text-secondary, #6b6388);
+      --border: var(--color-border-primary, rgba(124, 114, 224, 0.22));
+      --tone-high: #179e76;
+      --tone-mid: #d98200;
+      --tone-low: #df3a64;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 14px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans, "Segoe UI", "Microsoft YaHei UI", system-ui, sans-serif);
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    .app-shell {
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .hero-card {
+      position: relative;
+      background:
+        radial-gradient(circle at 80% 10%, rgba(246, 141, 199, 0.16), transparent 46%),
+        radial-gradient(circle at 18% 90%, rgba(114, 230, 255, 0.14), transparent 50%),
+        var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 14px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 28px rgba(14, 10, 34, 0.18);
+    }
+
+    .speech-bubble {
+      position: relative;
+      width: 100%;
+      max-width: 340px;
+      padding: 10px 14px;
+      border-radius: 18px;
+      background: var(--surface);
+      border: 1.5px solid rgba(164, 161, 250, 0.55);
+      box-shadow: 0 6px 18px rgba(124, 108, 255, 0.16);
+      text-align: center;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -7px;
+      width: 12px;
+      height: 12px;
+      background: var(--surface);
+      border-right: 1.5px solid rgba(164, 161, 250, 0.55);
+      border-bottom: 1.5px solid rgba(164, 161, 250, 0.55);
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .speech-bubble.pop-in {
+      animation: bubblePop 0.24s cubic-bezier(0.22, 1.32, 0.36, 1);
+    }
+
+    @keyframes bubblePop {
+      0% { transform: scale(0.92) translateY(4px); opacity: 0.65; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .bubble-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--accent-purple);
+      margin-bottom: 2px;
+    }
+
+    .bubble-main {
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pct-big {
+      font-size: 28px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+    .pct-big small {
+      font-size: 14px;
+      font-weight: 700;
+      margin-left: 2px;
+    }
+
+    .quote-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .bubble-sub {
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .bubble-bar-wrap {
+      margin-top: 7px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      overflow: hidden;
+    }
+    .bubble-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .tone-high { color: var(--tone-high); }
+    .tone-mid { color: var(--tone-mid); }
+    .tone-low { color: var(--tone-low); }
+    .bubble-bar-fill.tone-high, .progress-fill.tone-high {
+      background: linear-gradient(90deg, #72e6ff, #a4a1fa, #8ef0d0);
+    }
+    .bubble-bar-fill.tone-mid, .progress-fill.tone-mid {
+      background: linear-gradient(90deg, #ffbe55, #ffd466);
+    }
+    .bubble-bar-fill.tone-low, .progress-fill.tone-low {
+      background: linear-gradient(90deg, #ff5d8f, #ff8ba7);
+    }
+
+    .mascot-stage {
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      padding: 4px 16px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .mascot-img {
+      width: 158px;
+      height: auto;
+      display: block;
+      transform-origin: 50% 96%;
+      filter: drop-shadow(0 8px 14px rgba(24, 15, 58, 0.25));
+      transition: transform 0.14s cubic-bezier(0.22, 1.25, 0.36, 1);
+      pointer-events: none;
+    }
+    .mascot-img.squished {
+      transform: scaleX(1.1) scaleY(0.87);
+    }
+    .mascot-img.bouncing {
+      animation: catBounce 0.32s cubic-bezier(0.22, 1.4, 0.36, 1);
+    }
+    @keyframes catBounce {
+      0% { transform: scaleX(1.1) scaleY(0.87); }
+      45% { transform: scaleX(0.94) scaleY(1.07); }
+      75% { transform: scaleX(1.03) scaleY(0.98); }
+      100% { transform: scaleX(1) scaleY(1); }
+    }
+
+    .mascot-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .action-bar {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text);
+      border-radius: 11px;
+      padding: 7px 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn:hover {
+      border-color: var(--accent-purple);
+      background: rgba(164, 161, 250, 0.16);
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn.active, .btn.primary {
+      background: linear-gradient(135deg, rgba(164, 161, 250, 0.28), rgba(246, 141, 199, 0.24));
+      border-color: var(--accent-purple);
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 9px;
+      color: var(--text);
+    }
+
+    .chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(164, 161, 250, 0.16);
+      color: var(--accent-purple);
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .quota-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .quota-card {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 9px 11px;
+    }
+    .quota-head, .quota-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .quota-label { font-weight: 600; font-size: 12.5px; }
+    .quota-val { font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .quota-reset { font-size: 11px; color: var(--muted); }
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 999px;
+    }
+    .badge-live { background: rgba(114, 230, 255, 0.18); color: var(--accent-cyan); }
+    .badge-manual { background: rgba(246, 141, 199, 0.18); color: var(--accent-pink); }
+
+    .progress-track {
+      margin-top: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(164, 161, 250, 0.14);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.45s ease;
+    }
+
+    .empty-card {
+      background: var(--surface-soft);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 11px;
+    }
+    .empty-title { font-weight: 700; margin-bottom: 4px; }
+    .empty-desc { font-size: 12px; color: var(--muted); }
+    .empty-desc code {
+      background: rgba(164, 161, 250, 0.16);
+      padding: 1px 5px;
+      border-radius: 5px;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 11px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .stat-box {
+      background: var(--surface-soft);
+      border-radius: 11px;
+      padding: 8px;
+      text-align: center;
+    }
+    .stat-num { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--accent-purple); }
+    .stat-lbl { font-size: 11px; color: var(--muted); }
+
+    .model-row {
+      display: grid;
+      grid-template-columns: minmax(90px, 1.3fr) 1fr 28px;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+      font-size: 11.5px;
+    }
+    .model-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .model-bar { height: 6px; border-radius: 999px; background: var(--surface-soft); overflow: hidden; }
+    .model-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink)); border-radius: 999px; }
+    .model-cnt { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    .spark-row {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      align-items: end;
+      height: 54px;
+    }
+    .spark-col { display: flex; flex-direction: column; align-items: center; height: 100%; gap: 3px; }
+    .spark-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+    .spark-bar { width: 65%; min-height: 4px; border-radius: 4px 4px 2px 2px; background: linear-gradient(180deg, var(--accent-pink), var(--accent-purple)); }
+    .spark-lbl { font-size: 10px; color: var(--muted); }
+
+    .form-grid { display: flex; flex-direction: column; gap: 9px; }
+    .form-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .form-row label { font-size: 12px; color: var(--muted); }
+    input[type="number"], select, textarea {
+      background: var(--surface-soft);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 6px 8px;
+      font-family: inherit;
+      font-size: 12px;
+    }
+    textarea { width: 100%; min-height: 92px; resize: vertical; font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; }
+    .cmd-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 7px 9px;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 11px;
+      word-break: break-all;
+      color: var(--muted);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+      padding: 0 4px;
+    }
+    .muted-note { font-size: 11.5px; color: var(--muted); }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(34, 28, 66, 0.94);
+      color: #fff;
+      border: 1px solid rgba(164, 161, 250, 0.55);
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      z-index: 99;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.err { border-color: #ff6b8b; }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero-card">
+      <div class="speech-bubble" id="speechBubble">
+        <div class="bubble-tag" id="bubbleTag">Gemini 额度猫娘</div>
+        <div class="bubble-main" id="bubbleMain"><span class="quote-text">谷谷歌歌…正在唤醒猫娘喵</span></div>
+        <div class="bubble-bar-wrap" id="bubbleBarWrap" hidden>
+          <div class="bubble-bar-fill tone-high" id="bubbleBarFill" style="width:100%"></div>
+        </div>
+        <div class="bubble-sub" id="bubbleSub">点击猫娘切换额度 / 台词 / 今日统计</div>
+      </div>
+
+      <div class="mascot-stage" id="mascotStage" title="点击捏一捏猫娘，切换气泡显示">
+        <img id="mascotImg" class="mascot-img" src="__MASCOT_DATA_URI__" alt="Gemini 额度猫娘" draggable="false" />
+        <div class="mascot-hint">点我切换：剩余额度 → 谷谷歌歌台词 → 今日轮次</div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn" id="btnRefresh">🔄 刷新</button>
+        <button class="btn" id="btnCalibrate">🎯 校准</button>
+        <button class="btn primary" id="btnLaunchDesktop">🖥️ 桌面挂件</button>
+        <button class="btn" id="btnSettings">⚙️ 设置</button>
+      </div>
+    </section>
+
+    <section class="panel" id="calibrateDrawer" hidden>
+      <div class="panel-title"><span>🎯 手动校准 Gemini 剩余额度</span></div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="calBucket">额度窗口</label>
+          <select id="calBucket">
+            <option value="gemini-5h">Gemini 5小时额度 (gemini-5h)</option>
+            <option value="gemini-weekly" selected>Gemini 周额度 (gemini-weekly)</option>
+            <option value="gemini-pro">Gemini Pro 额度 (gemini-pro)</option>
+            <option value="gemini-flash">Gemini Flash 额度 (gemini-flash)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="calPctInput">当前剩余 (%)</label>
+          <div style="display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;">
+            <input id="calPctRange" type="range" min="0" max="100" step="1" value="80" style="width:120px" />
+            <input id="calPctInput" type="number" min="0" max="100" step="0.5" value="80" style="width:68px" />
+          </div>
+        </div>
+        <div class="form-row">
+          <label>距离重置</label>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <input id="calHours" type="number" min="0" max="168" value="4" style="width:60px" /> 小时
+            <input id="calMinutes" type="number" min="0" max="59" value="30" style="width:56px" /> 分
+          </div>
+        </div>
+        <button class="btn primary" id="btnSaveCalibration">保存并同步到桌面挂件</button>
+      </div>
+    </section>
+
+    <section class="panel" id="settingsDrawer" hidden>
+      <div class="panel-title"><span>⚙️ 挂件设置与 agy 实时同步</span></div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="setPreferredBucket">主气泡显示窗口</label>
+          <select id="setPreferredBucket">
+            <option value="">自动（优先 Gemini 5小时）</option>
+            <option value="gemini-5h">Gemini 5小时额度</option>
+            <option value="gemini-weekly">Gemini 周额度</option>
+            <option value="3p-5h">第三方模型 5小时额度</option>
+            <option value="3p-weekly">第三方模型 周额度</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="setAutoRefresh">定时后台同步 agy 真实额度</label>
+          <input id="setAutoRefresh" type="checkbox" checked />
+        </div>
+        <div class="form-row">
+          <label for="setRefreshMins">自动同步间隔（分钟）</label>
+          <input id="setRefreshMins" type="number" min="1" max="60" value="5" style="width:68px" />
+        </div>
+        <div class="form-row">
+          <label for="setRefreshAfterTurn">对话完成后自动同步真实额度</label>
+          <input id="setRefreshAfterTurn" type="checkbox" checked />
+        </div>
+        <div class="form-row">
+          <label for="setOnlyInAgy">仅在 Antigravity 窗口内显示桌面猫娘</label>
+          <input id="setOnlyInAgy" type="checkbox" checked />
+        </div>
+        <div class="form-row">
+          <label for="setAutoLaunch">打开 Antigravity 自动唤起桌面挂件</label>
+          <input id="setAutoLaunch" type="checkbox" checked />
+        </div>
+        <div class="form-row">
+          <label for="setAutoClose">关闭 Antigravity 自动退出桌面挂件</label>
+          <input id="setAutoClose" type="checkbox" />
+        </div>
+        <div class="form-row">
+          <label for="setSoundEnabled">启用 Q 弹点击音效</label>
+          <input id="setSoundEnabled" type="checkbox" checked />
+        </div>
+        <div class="form-row">
+          <label for="setSoundVolume">音效音量 (<span id="setSoundVolLabel">70%</span>)</label>
+          <input id="setSoundVolume" type="range" min="0" max="100" value="70" style="width:150px" />
+        </div>
+        <div class="form-row">
+          <label for="setLowAlert">低额度提醒阈值 (%)</label>
+          <input id="setLowAlert" type="number" min="5" max="80" value="20" style="width:68px" />
+        </div>
+        <div>
+          <label for="setCustomLines" style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px;">
+            自定义气泡台词（每行格式：<code>台词 | 权重 | any/high/mid/low</code>）
+          </label>
+          <textarea id="setCustomLines"></textarea>
+        </div>
+        <button class="btn primary" id="btnSaveSettings">保存设置</button>
+
+        <div style="margin-top:6px;padding-top:8px;border-top:1px solid var(--border);">
+          <div style="font-size:12px;font-weight:600;margin-bottom:4px;">🔌 一键接入 agy CLI 实时额度流</div>
+          <div class="cmd-box" id="agySetupCmd">powershell -ExecutionPolicy Bypass -File scripts/setup-agy-statusline.ps1</div>
+          <button class="btn" id="btnCopyAgyCmd" style="margin-top:6px;width:100%;">复制配置命令</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <span>✨ Gemini 模型剩余额度</span>
+        <span class="chip" id="activeModelChip">等待同步…</span>
+      </div>
+      <div class="quota-list" id="quotaList"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title"><span>📊 反重力对话活跃统计 (Hooks 自动记录)</span></div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-num" id="todayTurnsVal">0</div>
+          <div class="stat-lbl">今日调用轮次</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="todaySessionsVal">0</div>
+          <div class="stat-lbl">今日会话数</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="totalTurnsVal">0</div>
+          <div class="stat-lbl">累计记录轮次</div>
+        </div>
+      </div>
+      <div id="modelBreakdown"></div>
+      <div class="spark-row" id="spark7d"></div>
+    </section>
+
+    <div class="footer">
+      <span id="syncTimeLabel">等待同步</span>
+      <span>Antigravity Gemini Wallet</span>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script type="module">
+__BUNDLED_APP_JS__
+  </script>
+</body>
+</html>
